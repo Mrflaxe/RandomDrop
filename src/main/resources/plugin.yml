@@ -3,3 +3,5 @@ api-version: 1.16
 main: ru.mrflaxe.randomdrop.RandomDrop
 version: ${project.version}
 author: Mrflaxe
+
+depend: [SKLibrary]
