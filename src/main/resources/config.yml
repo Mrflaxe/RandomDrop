@@ -1,6 +1,6 @@
-# шанс на выпадение каждого предмета при смерти (100 = все)
+# chance for falling item when a player die (100 = all)
 chance: 10
 
-# миры, где должен работать плагин
+# worlds where should work the plugin.
 worlds:
   - "world"

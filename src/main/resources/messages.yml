@@ -1,1 +1,5 @@
-attention: "&4Когда вы закроете это меню, вы уже не сможете вернуть те ресурсы, котрые там остались!"
+messages:
+  attention: "&4When you will close this inventory you can't open it again. Take all what you need!"
+  empty-loot:
+   - "&eIt looks like you didn't have any items or you lost all of them..."
+   - "&eIn any case, this is why the inventory with loot did not open."

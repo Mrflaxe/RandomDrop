@@ -28,6 +28,6 @@ public class RandomDrop extends JavaPlugin{
 	}
 	
 	private void registerEvents() {
-		new PlayerDeathListener(config, messages, this).register(this);
+		new PlayerDeathListener(config, messages, this).register();
 	}
 }
