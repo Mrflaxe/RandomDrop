@@ -2,7 +2,7 @@ package ru.mrflaxe.randomdrop;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import ru.mrflaxe.randomdrop.listeners.PlayerDeathListener;
+import ru.mrflaxe.randomdrop.listeners.PlayerActionListener;
 import ru.soknight.lib.configuration.Configuration;
 import ru.soknight.lib.configuration.Messages;
 
@@ -28,6 +28,6 @@ public class RandomDrop extends JavaPlugin{
 	}
 	
 	private void registerEvents() {
-		new PlayerDeathListener(config, messages, this).register();
+		new PlayerActionListener(config, messages, this).register();
 	}
 }

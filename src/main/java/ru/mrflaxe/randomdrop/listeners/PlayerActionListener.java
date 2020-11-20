@@ -12,21 +12,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import ru.soknight.lib.configuration.Configuration;
 import ru.soknight.lib.configuration.Messages;
 
-public class PlayerDeathListener implements Listener{
+public class PlayerActionListener implements Listener{
 	
 	private final Configuration config;
 	private final Messages messages;
-	
 	private final JavaPlugin plugin;
 	
-	public PlayerDeathListener(Configuration config,Messages messages, JavaPlugin plugin) {
+	public PlayerActionListener(Configuration config,Messages messages, JavaPlugin plugin) {
 		this.config = config;
 		this.messages = messages;
 		this.plugin = plugin;
@@ -35,6 +34,7 @@ public class PlayerDeathListener implements Listener{
 	@EventHandler (priority = EventPriority.HIGH)
 	public void PlayerDeathevent(PlayerDeathEvent e) {
 		Player p = e.getEntity();
+		PlayerInventory inv = p.getInventory();
 		List<ItemStack> drops = e.getDrops();
 		
 		// filtering worlds by dint of config.
@@ -48,6 +48,8 @@ public class PlayerDeathListener implements Listener{
 		List<ItemStack> loot = drops.parallelStream().filter(i -> !drop.contains(i)).collect(Collectors.toList());
 		drops.clear();
 		
+		drop.forEach(i -> p.getWorld().dropItemNaturally(p.getLocation(), i));
+		
 		// if loot is empty we will not open empty inventory, but we send a message about it.
 		if(loot.size() == 0) {
 			Bukkit.getScheduler().runTaskLater(plugin, task -> {
@@ -57,15 +59,28 @@ public class PlayerDeathListener implements Listener{
 			return;
 		}
 		
-		// creating the empty Inventory
-		Inventory storage = Bukkit.createInventory(null, 54);
 		// filling the inventory with the player's remaining loot
-		loot.stream().forEach(i -> storage.addItem(i));
-		
-		// open this inventory for a player.
-		Bukkit.getScheduler().runTaskLater(plugin, task -> {
-			p.openInventory(storage);
-			messages.getAndSend(p, "messages.attention");
+		Bukkit.getScheduler().runTaskLater(plugin, () -> {
+			loot.stream().forEach(i -> {
+				String material = i.getType().name();
+				if(material.endsWith("HELMET")) {
+					inv.setHelmet(i);
+					return;
+				}
+				if(material.endsWith("CHESTPLATE")) {
+					inv.setChestplate(i);
+					return;
+				}
+				if(material.endsWith("LEGGINS")) {
+					inv.setLeggings(i);
+					return;
+				}
+				if(material.endsWith("BOOTS")) {
+					inv.setBoots(i);
+					return;
+				}
+				inv.addItem(i);
+			});
 		}, 20);
 	}
 	
@@ -81,6 +96,8 @@ public class PlayerDeathListener implements Listener{
 		List<ItemStack> blackList = drops.parallelStream()
 				.filter(i -> (i.getType() == Material.SUNFLOWER))
 				.filter(i -> i.getItemMeta().hasEnchant(Enchantment.DURABILITY))
+				.filter(i -> i.getType() == Material.SHIELD)
+				.filter(i -> i.getItemMeta().isUnbreakable())
 				.collect(Collectors.toList());
 		
 		blackList.parallelStream().forEach(i -> drops.remove(i));
